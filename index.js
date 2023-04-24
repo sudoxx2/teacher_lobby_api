@@ -1,39 +1,41 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 
 // Using Node.js `require()`
 const mongoose = require("mongoose");
-const Product = require("./models/productModel");
+const UserMain = require("./models/UserModel");
 
 const PORT = 8080;
 
 app.use(express.json());
 
-app.get("/products", async (req, res) => {
+app.get("/users", async (req, res) => {
   try {
-    const products = await Product.find({});
-    res.status(200).json(products);
+    const users = await UserMain.find({});
+    res.status(200).json(users);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
   }
 });
-
-app.get("/products/:id", async (req, res) => {
+// get a user
+app.get("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findById(id);
-    res.status(200).json(product);
+    const User = await UserMain.findById(id);
+    res.status(200).json(User);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
   }
 });
 
-app.post("/product", async (req, res) => {
+// create a user
+app.post("/user", async (req, res) => {
   try {
-    const product = await Product.create(req.body);
-    res.status(200).json(product);
+    const User = await UserMain.create(req.body);
+    res.status(200).json(User);
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message });
@@ -43,36 +45,35 @@ app.post("/product", async (req, res) => {
   // res.send(req.body);
 });
 
-// update a product
-app.put("/products/:id", async (req, res) => {
+// update a user
+app.put("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findByIdAndUpdate(id, req.body);
-    // we cannot find any product in database
-    if (!product) {
+    const User = await UserMain.findByIdAndUpdate(id, req.body);
+    // we cannot find any User in database
+    if (!User) {
       return res
         .status(404)
-        .json({ message: `cannot find any product with ID ${id}` });
+        .json({ message: `cannot find any User with ID ${id}` });
     }
-    const updatedProduct = await Product.findById(id);
-    res.status(200).json(updatedProduct);
+    const updatedUser = await UserMain.findById(id);
+    res.status(200).json(updatedUser);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// delete a product
-
-app.delete("/products/:id", async (req, res) => {
+// delete a user
+app.delete("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findByIdAndDelete(id);
-    if (!product) {
+    const User = await UserMain.findByIdAndDelete(id);
+    if (!User) {
       return res
         .status(404)
-        .json({ message: `cannot find any product with ID ${id}` });
+        .json({ message: `cannot find any User with ID ${id}` });
     }
-    res.status(200).json(product);
+    res.status(200).json(User);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -80,11 +81,15 @@ app.delete("/products/:id", async (req, res) => {
 
 mongoose
   .connect(
-    "mongodb+srv://admin:nani123@teacherlobbyapi.yc7jlo3.mongodb.net/Node-API?retryWrites=true&w=majority"
+    "mongodb+srv://" +
+      process.env.MONGO_USER +
+      ":" +
+      process.env.MONGO_PASS +
+      "@teacherlobbyapi.yc7jlo3.mongodb.net/Node-API?retryWrites=true&w=majority"
   )
   .then(() => console.log("Connected!"))
   .catch((error) => {
     console.log(error);
   });
 
-app.listen(PORT, () => console.log(`its alive on httpL//localhost:${PORT}`));
+app.listen(PORT, () => console.log(`its alive on http://localhost:${PORT}`));
