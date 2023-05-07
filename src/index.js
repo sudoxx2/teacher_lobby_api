@@ -11,8 +11,6 @@ app.use("/user", userRoute);
 // Using Node.js `require()`
 const mongoose = require("mongoose");
 
-const User = mongoose.model("User", userSchema);
-
 mongoose
   .connect(
     "mongodb+srv://" +
